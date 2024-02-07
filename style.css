@@ -10,7 +10,7 @@ body {
     flex-direction: column;
     justify-content: space-between; /* This will push the footer to the bottom */
     align-items: center;
-    height: 100vh; /* Keep the overall height */
+    height: calc(var(--vh, 1vh) * 100); /* Replace 100vh with this */
     margin: 0;
     padding: 0;
     font-family: 'Poppins', sans-serif;
