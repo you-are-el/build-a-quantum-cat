@@ -1,0 +1,145 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap');
+
+* {
+    box-sizing: border-box;
+    /* Ensures padding and border are included in width */
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Poppins', sans-serif;
+    height: 100vh;
+    /* Set body height to 100% of the viewport height */
+    overflow-x: hidden;
+    /* Hide horizontal overflow */
+}
+
+.header {
+    font-size: 32px;
+    margin: 20px 0;
+    font-weight: 700;
+}
+
+.image-container {
+    max-width: 500px;
+    /* Set this to the width of your canvas/image */
+    max-height: 500px;
+    /* Set this to the height of your canvas/image */
+    margin: 20px 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#sharedCanvas {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+}
+
+.cat-id-container {
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.cat-id-container input {
+    margin-right: 10px;
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.cat-id-container button {
+    padding: 8px 16px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    background-color: #9d82ff;
+    color: white;
+    cursor: pointer;
+}
+
+.cat-id-container button:hover {
+    background-color: #754fff;
+}
+
+.layers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    width: 90%;
+    max-width: 1000px;
+    gap: 10px;
+    padding-bottom: 20px;
+    max-height: calc(100vh -
+            /* Adjust based on other elements */
+        );
+    overflow-y: auto;
+    /* Enable vertical scrolling */
+    /* Ensure that the grid itself does not overflow horizontally */
+    overflow-x: hidden;
+}
+
+
+.layer-button {
+    width: 100%;
+    /* Makes the button width responsive to the grid's column size */
+    min-width: 80px;
+    /* Set the minimum width for the button */
+    height: 30px;
+    background-color: #f1f1f1;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    white-space: nowrap;
+    /* Prevents text from wrapping */
+}
+
+.layer-button button {
+    width: 100%;
+    /* Makes the button fill the container */
+    height: 100%;
+    /* Makes the button fill the container */
+    background-color: transparent;
+    /* Matches the outer div's background */
+    border: none;
+    /* Removes the border */
+    border-radius: 4px;
+    /* Optional: if you want to keep the rounded corners */
+    display: block;
+    /* Optional: stretches the button to fill the container */
+    padding: 0;
+    /* Removes padding */
+    cursor: pointer;
+    outline: none;
+    /* Removes the outline */
+}
+
+.layer-button button:hover {
+    background-color: #e0e0e0;
+    /* Hover effect for the button */
+}
+
+.layer-button button.active {
+    background-color: #9d82ff;
+    /* Active color */
+    color: white;
+}
+
+.layer-button button.inactive {
+    background-color: #e0e0e0;
+    /* Inactive color */
+    color: black;
+}
+
+.layer-button button:disabled {
+    background-color: #ddd;
+    /* Disabled color */
+    color: #aaa;
+}
