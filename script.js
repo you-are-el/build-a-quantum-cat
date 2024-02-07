@@ -35,14 +35,18 @@ async function updateOrdiScanUrl() {
 }
 
 document.getElementById("downloadCat").onclick = function() {
-  var canvas = document.getElementById("sharedCanvas");
-  var image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
-  var link = document.createElement('a');
-  link.download = 'my_quantumcat.png';
-  link.href = image;
-  link.click();
-  closeModal();
-}
+    var canvas = document.getElementById("sharedCanvas");
+    canvas.toBlob(function(blob) {
+        var url = URL.createObjectURL(blob);
+        var link = document.createElement('a');
+        link.download = 'my_quantumcat.png';
+        link.href = url;
+        link.click();
+        URL.revokeObjectURL(url); // Clean up after download
+    }, 'image/png');
+    closeModal();
+};
+
 
 //Close Modal
 function closeModal() {

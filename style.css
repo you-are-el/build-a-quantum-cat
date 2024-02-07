@@ -103,6 +103,8 @@ body {
     border: none;
     cursor: pointer;
     width: 80%; /* Match width with modal content */
+    text-decoration: none;
+    color: black;
 }
 
 .modal-content a {
