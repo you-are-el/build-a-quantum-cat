@@ -54,7 +54,19 @@ function closeModal() {
     modal.style.display = "none";
 }
 
+//create index for faster loading
+let catIndex = new Map();
 
+async function buildIndex() {
+    const data = await loadInscriptionData();
+    if (data) {
+        data.forEach(item => {
+            catIndex.set(item.cat_id, item);
+            catIndex.set(item.inscription_number, item);
+            catIndex.set(item.inscription_id, item);
+        });
+    }
+}
 // Get ordiscan ULR
 async function loadInscriptionData() {
     try {
@@ -67,13 +79,13 @@ async function loadInscriptionData() {
     }
 }
 
-async function getOrdiScanUrl(catId) {
-    const inscriptionData = await loadInscriptionData();
-    if (!inscriptionData) {
-        return "https://ordiscan.com"; // Fallback URL in case of error
+function getOrdiScanUrl(catId) {
+    if (catIndex.size === 0) {
+        console.error("Index not built yet");
+        return "https://ordiscan.com"; // Fallback URL in case index is not ready
     }
 
-    let inscription = inscriptionData.find(item => item.cat_id === catId);
+    const inscription = catIndex.get(catId);
     if (inscription) {
         return `https://ordiscan.com/inscription/${inscription.inscription_number}`;
     } else {
@@ -105,11 +117,36 @@ document.addEventListener('DOMContentLoaded', function() {
     setViewportHeight(); // Set the initial viewport height
 });
 
+function adjustImageContainerSize() {
+    const viewportHeight = window.innerHeight;
+    const imageContainer = document.getElementById('dynamic-images-container');
+    const maxContainerHeight = viewportHeight * 0.4; // 50% of the viewport height
+
+    // Get the current width of the container (since it's square, width = height)
+    let containerWidth = imageContainer.offsetWidth;
+
+    if (containerWidth > maxContainerHeight) {
+        // Reduce size to not exceed 50% of the viewport height
+        imageContainer.style.width = maxContainerHeight + 'px';
+        imageContainer.style.height = maxContainerHeight + 'px';
+    } else if (containerWidth < maxContainerHeight) {
+        // Increase size up to 50% of the viewport height or until CSS max-width is reached
+        imageContainer.style.width = maxContainerHeight + 'px';
+        imageContainer.style.height = maxContainerHeight + 'px';
+    }
+}
+
+// Run the function on initial load and on window resize
+window.onload = adjustImageContainerSize;
+window.onresize = adjustImageContainerSize;
+
+
 
 // Loading Cats
 let catId = "cat0000";
-updateOrdiScanUrl();
 let layersData = new Array(40).fill(null);
+updateOrdiScanUrl(); // Call this to update the OrdiScan URL when the page loads
+buildIndex();
 const layerHashes = ["445e3695047139623c160ca1dc62db80234aac3d68b20a64c7b4982f9b58d7bfi0", "8abc1e5e864f948e20d4392e66d1c058ac8b7d408bcd6906434a958ba63fb8abi0", "8e0bc8acf4657ebb8aa8e0e3ca5bce923ec0b2cf6a5740649b82dcd2e6d37bbfi0", "c30a5766f26b2d9c0cabab26b0893be77fa520d0909a145b1b1c68b6a104a89ei0", "0147fcd7fc07f38c049ef1406cbc3791a1ff99e4a47ae775699cfbaaebed4a73i0", "68aca2303d1d72c1e67a0a8c984b903f2dc53251b5413cb2e675b24f8791b372i0", "123bed4b082084286059eb5129bb0d8991bf5f9597fa9afc593b64c60039e27fi0", "c7c7ec152cf08b03c42ab82939e4bf3327fb34ca9e57f1471f31b0cac6c73672i0", "1e886b750ab13926e46f3b2d08ea9f071b0a0126802dfa6f2b4d9a49cabfd281i0", "d9c6902d70d45dbc501c3feded93e585a495efe101546404fcc474c3d07cb716i0", "0a71d90e808e3ab17fa04f19d9fa0fa3e3c5c3393b5f8edb387a39fbfa42ac37i0", "bf3fc9c8b518d5027a90d4b72e37c9ed4eaaf364f5e21143c2ea3ff641a842f6i0", "ec6cdd4db49e577180b9e0afad299502ec7840cee5daab25eee9a58a382951c5i0", "bf540f284fbc743cc188dfa090b9acdd061298a34048f3cee3c9007f234a7b5fi0", "ad6a41e8d0974402a657fe58ae7337b2bca470d694c5b16d366c1685f7d8706di0", "4059843e80ee5ff817fe0c4a07d7963a04dbe4c32d6e70d946448313d196c1fai0", "d520f6da7424656906af8928489a6ea386a5b94b3b58cf4c21a717af0ae0ef89i0", "6f1af95293860f99f02fcb4c5740f396b51f53a788516a4e331795caaf75dcd8i0", "07bbf1184d58e49e730def7776c050670b0368f7c55d44d0da355ef3d8454f7fi0", "2c81f73180ef35a073231f38e2651442ff9c138467a1af787600d5a48def78a9i0", "9b980285b33616668c008b278792d032e78b5fc79e77b4189f2544e6b043b26fi0", "383467579e0f5c6e9c1f15f1c64438a69cf100dfbe8cf509b6b3dd1e1ebe448ci0", "9a5b48bc465d4ce9951e07cbf8fb3189815e3ab34070ac8b6d303fb140c80446i0", "8deef3801fac418f284a705030157af0a54a7c1cceae823ea944dd5532ac54c1i0", "dfa7797e9d1a73657c419c52943d83108037a4a24ab205b2dc9105d3bbef4131i0", "938ff6bc5264fbd435b38c0004e4b20af5a336ebe17fa902d53079bbdc4d8cd1i0", "4fc85ba932240e9e4f05268e1d983d15eb991fcc26e95ddbe437c187fd4a73b7i0", "7d9e59a2845d052afc68b5fa8a4fc7c85155617ee354c29177752fcf09ab1480i0", "d1b6e4159d44ae450094c5e4ced9116e7ef841891ac9366a924afd36eceb7065i0", "acba94836c4233f1e31f8ea141b22ed2fcac742c39b3e40a225df8dd82909574i0", "07c3c197783ef1aa0a907004310067aae2fb098d676bc861d67cafd605d1fd54i0", "dc349df26778bd4745646a4385f543a2f1fb3a6f30a3faf1ca707c63bb38279ci0", "f507a0bd2b1d89c4751cb99b17e41b5d6e34f763c681fdfdee25ef4e31f6f82ai0", "2fd10119a501e19fa7d833b48f34f3607b3687005393b54fcc4665f7d9e89132i0", "50d68204f9bf58d594089c2f4078a2520e992342b434ef0abb3933f751352bf1i0", "da1bc6b24f3a1fafd3324985fc70796e833523ba55a54bb5095b216eae1c7b47i0", "22eacef5d361d31653aa326c8f6aa1ee58b42ae2b5ffd222177da0dc258e9241i0", "f5bd7a72eeda40fcd9b8393fb5b7e3f800e535f1dd4611495b79bf1569d4fe66i0", "6ce851b4b24a95f71cc2ccfef51d4d9dd1c4b2f65635963164bdb6cccc45ee05i0", "466dc5011b5c0d483c7f90b64d469a66e9c91b7d1b9febf39b6bfa6715183d37i0"]
 
 class FetchQueue {
@@ -305,25 +342,21 @@ function loadCatEventSetup() {
     });
 }
 
-async function getCatIdFromInput(input) {
-    // If the input is 1-4 digits, it's treated as a cat ID
-    if (/^\d{1,4}$/.test(input)) {
-        return 'cat' + input.padStart(4, '0');
+function getCatIdFromInput(input) {
+    if (catIndex.size === 0) {
+        console.error("Index not built yet");
+        return null;
     }
 
-    // Load the JSON data only if the input does not match the cat ID pattern
-    const data = await loadInscriptionData();
-    if (!data) return null;
+    // If the input is 1-4 digits, it's treated as a cat ID
+    if (/^\d{1,4}$/.test(input)) {
+        input = 'cat' + input.padStart(4, '0');
+    }
 
-    // Look up the input in the JSON data
-    let catEntry = data.find(item => 
-        item.cat_id === input || 
-        item.inscription_number === input ||
-        item.inscription_id === input
-    );
-
+    const catEntry = catIndex.get(input);
     return catEntry ? catEntry.cat_id : null;
 }
+
 
 // Update createLayerButtons function to add 'inactive' class by default
 function createLayerButtons() {
