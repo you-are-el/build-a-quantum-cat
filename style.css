@@ -25,10 +25,9 @@ body {
 }
 
 .image-container {
+    width: 50%;
     max-width: 500px;
-    /* Set this to the width of your canvas/image */
     max-height: 500px;
-    /* Set this to the height of your canvas/image */
     margin: 20px 20px;
     border-radius: 8px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
