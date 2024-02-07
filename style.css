@@ -17,13 +17,13 @@ body {
 }
 
 .header {
-    font-size: 32px;
+    font-size: clamp(24px, 5vw, 32px); /* Adjust min, preferred, and max values */
     margin: 20px 0;
     font-weight: 700;
 }
 
 .image-container {
-    width: 50%;
+    width: 60%;
     max-width: 500px;
     max-height: 500px;
     margin: 20px 20px;
