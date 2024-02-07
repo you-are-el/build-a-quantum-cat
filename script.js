@@ -22,13 +22,21 @@ window.onclick = function(event) {
   }
 }
 
-// Add functionality to the buttons
 document.getElementById("viewOrdiScan").onclick = async function() {
     let currentCatId = catId; // Replace this with the actual current cat ID
     try {
         let ordiScanUrl = await getOrdiScanUrl(currentCatId);
-        document.getElementById("ordiScanLink").href = ordiScanUrl;
-        // No need to call window.open or closeModal here
+        
+        // Create a temporary 'a' tag, set URL and simulate click
+        var tempLink = document.createElement('a');
+        tempLink.href = ordiScanUrl;
+        tempLink.target = '_blank'; // To open in a new tab
+        tempLink.style.display = 'none'; // Hide the link
+        document.body.appendChild(tempLink); // Add to the document
+        tempLink.click(); // Simulate click
+        document.body.removeChild(tempLink); // Remove the link after clicking
+
+        closeModal();
     } catch (error) {
         console.error("Error getting OrdiScan URL:", error);
         // Handle error (e.g., show a message to the user)
