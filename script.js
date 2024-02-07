@@ -295,13 +295,33 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Sets up the event listener for the 'Load Cat' button, unchanged
 function loadCatEventSetup() {
-    document.getElementById('loadCatButton').addEventListener('click', function () {
-        catId = 'cat' + document.getElementById('catIdInput').value;
+    document.getElementById('loadCatButton').addEventListener('click', async function () {
+        const input = document.getElementById('catIdInput').value;
+        catId = await getCatIdFromInput(input);
         closeModal();
         updateOrdiScanUrl();
         clearLayersData();
         initiateLayerLoading();
     });
+}
+
+async function getCatIdFromInput(input) {
+    const data = await loadInscriptionData();
+    if (!data) return null;
+
+    // If the input is 1-4 digits, it's treated as a cat ID
+    if (/^\d{1,4}$/.test(input)) {
+        return 'cat' + input.padStart(4, '0');
+    }
+
+    // Look up the input in the JSON data
+    let catEntry = data.find(item => 
+        item.cat_id === input || 
+        item.inscription_number === input ||
+        item.inscription_id === input
+    );
+
+    return catEntry ? catEntry.cat_id : null;
 }
 
 // Update createLayerButtons function to add 'inactive' class by default
