@@ -12,10 +12,8 @@ body {
     flex-direction: column;
     align-items: center;
     font-family: 'Poppins', sans-serif;
-    height: 100vh;
-    /* Set body height to 100% of the viewport height */
+    height: calc(var(--vh, 1vh) * 100); /* Use the --vh variable */
     overflow-x: hidden;
-    /* Hide horizontal overflow */
 }
 
 .header {
