@@ -306,13 +306,14 @@ function loadCatEventSetup() {
 }
 
 async function getCatIdFromInput(input) {
-    const data = await loadInscriptionData();
-    if (!data) return null;
-
     // If the input is 1-4 digits, it's treated as a cat ID
     if (/^\d{1,4}$/.test(input)) {
         return 'cat' + input.padStart(4, '0');
     }
+
+    // Load the JSON data only if the input does not match the cat ID pattern
+    const data = await loadInscriptionData();
+    if (!data) return null;
 
     // Look up the input in the JSON data
     let catEntry = data.find(item => 
