@@ -12,15 +12,27 @@
 
     <div class="image-container" id="dynamic-images-container">
         <canvas id="sharedCanvas" width="600" height="600"></canvas>
+        <!-- Modal -->
+        <div id="imageModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <button id="viewOrdiScan">View on ordiscan</button>
+                <button id="downloadCat">Download cat</button>
+            </div>
+        </div>
     </div>
 
     <div class="cat-id-container">
-        <input type="text" id="catIdInput" value="0000">
+        <input type="text" id="catIdInput" placeholder="Cat Number (e.g. 0000)">
         <button id="loadCatButton">Load Cat</button>
     </div>
 
     <div class="layers-grid" id="checkboxContainer">
         <!-- Dynamically generated layer buttons will go here -->
+    </div>
+
+    <div class="footer">
+        <span>Built by <a href="https://twitter.com/you_are_el" target="_blank">You Are El</a></span>
     </div>
 
     <script src="script.js"></script>

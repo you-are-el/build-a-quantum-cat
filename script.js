@@ -1,3 +1,83 @@
+// Modal
+var modal = document.getElementById("imageModal");
+
+// Get the image and insert it inside the modal
+var img = document.getElementById("sharedCanvas");
+img.onclick = function() {
+  modal.style.display = "block";
+}
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal) {
+    closeModal();
+  }
+}
+
+// Add functionality to the buttons
+document.getElementById("viewOrdiScan").onclick = async function() {
+    let currentCatId = catId; // Replace this with the actual current cat ID
+    try {
+        let ordiScanUrl = await getOrdiScanUrl(currentCatId);
+        window.open(ordiScanUrl, "_blank"); // Opens the URL in a new tab
+        closeModal();
+    } catch (error) {
+        console.error("Error getting OrdiScan URL:", error);
+        // Handle error (e.g., show a message to the user)
+    }
+}
+
+document.getElementById("downloadCat").onclick = function() {
+  var canvas = document.getElementById("sharedCanvas");
+  var image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+  var link = document.createElement('a');
+  link.download = 'my_quantumcat.png';
+  link.href = image;
+  link.click();
+  closeModal();
+}
+
+//Close Modal
+function closeModal() {
+    var modal = document.getElementById('imageModal'); // Replace with your actual modal ID
+    modal.style.display = "none";
+}
+
+
+// Get ordiscan ULR
+async function loadInscriptionData() {
+    try {
+        const response = await fetch('cats.json');
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error("Error loading inscription data:", error);
+        return null;
+    }
+}
+
+async function getOrdiScanUrl(catId) {
+    const inscriptionData = await loadInscriptionData();
+    if (!inscriptionData) {
+        return "https://ordiscan.com"; // Fallback URL in case of error
+    }
+
+    let inscription = inscriptionData.find(item => item.cat_id === catId);
+    if (inscription) {
+        return `https://ordiscan.com/inscription/${inscription.inscription_number}`;
+    } else {
+        return "https://ordiscan.com"; // Fallback URL if catId not found
+    }
+}
+
 // Utility functions
 document.addEventListener("DOMContentLoaded", function() {
     adjustImageContainerSize();
@@ -213,6 +293,7 @@ document.addEventListener("DOMContentLoaded", function () {
 function loadCatEventSetup() {
     document.getElementById('loadCatButton').addEventListener('click', function () {
         catId = 'cat' + document.getElementById('catIdInput').value;
+        closeModal();
         clearLayersData();
         initiateLayerLoading();
     });

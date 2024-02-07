@@ -6,23 +6,39 @@
 }
 
 body {
-    margin: 0;
-    padding: 0;
     display: flex;
     flex-direction: column;
+    justify-content: space-between; /* This will push the footer to the bottom */
     align-items: center;
+    height: 100vh; /* Keep the overall height */
+    margin: 0;
+    padding: 0;
     font-family: 'Poppins', sans-serif;
-    height: calc(var(--vh, 1vh) * 100); /* Use the --vh variable */
     overflow-x: hidden;
 }
 
+.footer {
+    text-align: center;
+    padding: 10px 0;
+    font-size: 14px;
+    color: #969696;
+    font-size: clamp(10px, 1.8vw, 12px);
+}
+
+.footer a {
+    text-decoration: none;
+    font-weight: 500;
+    color: #969696;
+}
+
 .header {
-    font-size: clamp(24px, 5vw, 32px); /* Adjust min, preferred, and max values */
+    font-size: clamp(24px, 5vw, 32px);
     margin: 20px 0;
     font-weight: 700;
 }
 
 .image-container {
+    position: relative;
     width: 60%;
     max-width: 500px;
     max-height: 500px;
@@ -36,6 +52,59 @@ body {
     height: 100%;
     border-radius: 8px;
 }
+
+/* Modal */
+.modal {
+    display: none;
+    position: absolute;
+    z-index: 2; /* Higher than other elements in image-container */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #fefefe;
+    border-radius: 8px;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    padding: 20px;
+    width: 100%; /* Adjust width as needed */
+    text-align: center;
+    display: flex;
+    flex-direction: column; /* Stack elements vertically */
+    align-items: center; /* Center items horizontally */
+    justify-content: center; /* Center items vertically */
+    position: relative; /* Needed for positioning the close button */
+    height: 100%; /* Take full height of the modal */
+    border-radius: 8px;
+}
+.close {
+    color: #aaa;
+    position: absolute; /* Positioning relative to modal-content */
+    top: 8px; /* Distance from the top */
+    right: 20px; /* Distance from the right */
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+}
+
+#viewOrdiScan, #downloadCat {
+    padding: 10px 20px;
+    margin: 10px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    width: 80%; /* Match width with modal content */
+}
+
 
 .cat-id-container {
     display: flex;
