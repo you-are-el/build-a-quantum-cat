@@ -27,8 +27,8 @@ document.getElementById("viewOrdiScan").onclick = async function() {
     let currentCatId = catId; // Replace this with the actual current cat ID
     try {
         let ordiScanUrl = await getOrdiScanUrl(currentCatId);
-        window.open(ordiScanUrl, "_blank"); // Opens the URL in a new tab
-        closeModal();
+        document.getElementById("ordiScanLink").href = ordiScanUrl;
+        // No need to call window.open or closeModal here
     } catch (error) {
         console.error("Error getting OrdiScan URL:", error);
         // Handle error (e.g., show a message to the user)
