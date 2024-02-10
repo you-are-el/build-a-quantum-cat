@@ -10,8 +10,10 @@ async function initializePage() {
     updateOrdiScanUrl(); // Update the OrdiScan URL
     createLayerButtons(); // Now that evolution data is available, create layer buttons
     initiateLayerLoading(); // Start loading layers
+    loadCatEventSetup();
     populateEvolutionDropdown(); // Populate evolution dropdown
-    updateCatForEvolutionState(getHighestEvolutionState(catId));
+    //Initialize Layer Button with the highest layer
+    document.getElementById('showEvolutions').textContent = (getHighestEvolutionState(catId) + 1);
 }
 
 // Call the function to initialize the page
@@ -238,42 +240,77 @@ async function updateCatForEvolutionState(evolutionStateIndex) {
     const showEvolutionsButton = document.getElementById('showEvolutions');
     showEvolutionsButton.textContent = evolutionStateIndex + 1; // +1 for human-readable format
 
+    // Prepare an array to hold promises for layer loading
+    let layerLoadPromises = [];
+
     // Iterate over evolutionData to determine which layers to update
     for (let i = 0; i < evolutionData.length; i++) {
-        // Check if the layer is already loaded
-        if (layersData[i] && evolutionData[i] === "True") {
-            // Layer is already loaded and should be displayed
-            setButtonState(i, true);
-        } else if (evolutionData[i] === "True") {
-            // Load and display this layer
-            await loadLayer(catId, layerHashes[i]).then(imageBlob => {
+        // Only load layers that are marked as "True" and are not already loaded
+        if (evolutionData[i] === "True" && !layersData[i]) {
+            // Push the layer loading promise into the array
+            layerLoadPromises.push(loadLayer(catId, layerHashes[i]).then(imageBlob => {
                 if (imageBlob) {
                     layersData[i] = imageBlob;
-                    setButtonState(i, true); // Set the corresponding button to active
                 }
-            });
-        } else {
-            layersData[i] = null; // Ensure the layer is set to null if not used
-            setButtonState(i, false); // Set the corresponding button to inactive
+            }));
+        } else if (evolutionData[i] !== "True") {
+            // Ensure the layer is set to null if not used 
+            layersData[i] = null;
         }
     }
 
-    renderLayers(); // Re-render layers to update the cat image
+    // Wait for all layer loading promises to resolve
+    await Promise.all(layerLoadPromises);
+
+    // Set button states based on the loaded evolution state
+    setButtonState(evolutionStateIndex);
+
+    // Now that all layers are loaded, render them on the canvas
+    await renderLayers();
 }
 
 
-function setButtonState(layerIndex, isActive) {
-    const button = document.getElementById('layer' + (layerIndex + 1));
-    if (button) {
-        if (isActive) {
-            button.classList.remove('inactive');
-            button.classList.add('active'); // Ensure this class is styled appropriately
-        } else {
-            button.classList.add('inactive');
-            button.classList.remove('active');
-        }
+function setButtonState(evolutionStateIndex) {
+    // Ensure we have the evolution data for the current cat
+    if (!evolutionIndex.has(catId)) {
+        console.error("No evolution data for cat:", catId);
+        return;
     }
+
+    // Get the evolution data for the given state and the highest state
+    const currentEvolutionData = evolutionIndex.get(catId).get(evolutionStateIndex);
+    const highestEvolutionStateIndex = getHighestEvolutionState(catId);
+    const highestEvolutionData = evolutionIndex.get(catId).get(highestEvolutionStateIndex);
+
+    if (!currentEvolutionData || !highestEvolutionData) {
+        console.error("No data for evolution state:", evolutionStateIndex, "or highest evolution state");
+        return;
+    }
+
+    // Iterate through each button and set its state based on currentEvolutionData
+    currentEvolutionData.forEach((state, index) => {
+        const button = document.getElementById('layer' + (index + 1));
+        if (button) {
+            if (state === "True") {
+                button.classList.remove('inactive');
+                button.classList.add('active');
+                button.disabled = false;
+                button.textContent = 'Layer ' + (index + 1);
+            } else if (state === "False") {
+                button.classList.add('inactive');
+                button.classList.remove('active');
+                button.disabled = true;
+                button.textContent = 'Trait Not Available';
+            } else {
+                button.classList.add('inactive');
+                button.classList.remove('active');
+                button.disabled = highestEvolutionData[index] !== "True";
+                button.textContent = highestEvolutionData[index] === "True" ? 'Layer ' + (index + 1) : 'Not Inscribed';
+            }
+        }
+    });
 }
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 
 // Button handling //////////////////////////////////////////////////////////////////////
@@ -462,18 +499,29 @@ function renderLayers() {
     const context = canvas.getContext("2d");
     context.clearRect(0, 0, canvas.width, canvas.height); // Clear existing drawing
 
+    const imageLoadPromises = [];
+
     layersData.forEach((layerBlob, index) => {
-        // Check if the layer data exists, then draw it
         if (layerBlob) {
             const objectURL = URL.createObjectURL(layerBlob);
             const img = new Image();
-            img.onload = function () {
-                context.drawImage(img, 0, 0, canvas.width, canvas.height);
-                URL.revokeObjectURL(objectURL);
-            };
+
+            // Create a promise for each image load
+            const imageLoadPromise = new Promise((resolve) => {
+                img.onload = function () {
+                    context.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    URL.revokeObjectURL(objectURL);
+                    resolve();
+                };
+            });
+
             img.src = objectURL;
+            imageLoadPromises.push(imageLoadPromise);
         }
     });
+
+    // Use Promise.all to wait for all images to load before any further actions
+    return Promise.all(imageLoadPromises);
 }
 
 function clearLayersData() {
@@ -497,8 +545,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     adjustCanvasSize(); // Now we can safely call it
-    loadCatEventSetup();
-    createLayerButtons();
 });
 
 // Sets up the event listener for the 'Load Cat' button, unchanged
@@ -511,13 +557,16 @@ function loadCatEventSetup() {
             updateCatNameDisplay(catId);
             updateOrdiScanUrl();
             clearLayersData();
-            initiateLayerLoading();
 
             // Determine the highest available evolution state
             const highestEvolutionState = getHighestEvolutionState(catId);
 
             // Update the cat for this evolution state
             await updateCatForEvolutionState(highestEvolutionState);
+
+            // Update Buttons
+            console.log("debug " + (highestEvolutionState + 1));
+            setButtonState((highestEvolutionState + 1));
 
             // Update the showEvolutions button
             const showEvolutionsButton = document.getElementById('showEvolutions');
