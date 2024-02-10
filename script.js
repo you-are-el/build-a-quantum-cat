@@ -499,29 +499,29 @@ function renderLayers() {
     const context = canvas.getContext("2d");
     context.clearRect(0, 0, canvas.width, canvas.height); // Clear existing drawing
 
-    const imageLoadPromises = [];
-
-    layersData.forEach((layerBlob, index) => {
+    const imageLoadPromises = layersData.map((layerBlob, index) => {
         if (layerBlob) {
             const objectURL = URL.createObjectURL(layerBlob);
             const img = new Image();
 
-            // Create a promise for each image load
-            const imageLoadPromise = new Promise((resolve) => {
-                img.onload = function () {
-                    context.drawImage(img, 0, 0, canvas.width, canvas.height);
+            return new Promise((resolve) => {
+                img.onload = () => {
+                    resolve({img, index});
                     URL.revokeObjectURL(objectURL);
-                    resolve();
                 };
+                img.src = objectURL;
             });
-
-            img.src = objectURL;
-            imageLoadPromises.push(imageLoadPromise);
         }
+        return Promise.resolve(null);
     });
 
-    // Use Promise.all to wait for all images to load before any further actions
-    return Promise.all(imageLoadPromises);
+    // Wait for all images to load
+    return Promise.all(imageLoadPromises).then((loadedImages) => {
+        // Sort images by original index to maintain order
+        loadedImages.filter(imgObj => imgObj).sort((a, b) => a.index - b.index).forEach(imgObj => {
+            context.drawImage(imgObj.img, 0, 0, canvas.width, canvas.height);
+        });
+    });
 }
 
 function clearLayersData() {
