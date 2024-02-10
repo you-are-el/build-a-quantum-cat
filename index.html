@@ -8,17 +8,23 @@
 </head>
 
 <body>
-    <div class="header">Build-A-Quantum Cat</div>
+    <div class="header"></div>
 
-    <div class="image-container" id="dynamic-images-container">
-        <canvas id="sharedCanvas" width="600" height="600"></canvas>
-        <!-- Modal -->
-        <div id="imageModal" class="modal">
-            <div class="modal-content">
-                <span class="close">&times;</span>
-                <button id="viewOrdiScan"><a id="ordiScanLink" href="#" target="_blank" onclick="closeModal()">View on ordiscan</a></button>
-                <button id="downloadCat">Download cat</button>
+    <div class="cat-display-container" id="cat-display-container">
+        <div class="status-bar">
+            <div class="cat-name">cat0000</div>
+            <div class="button-container">
+                <button id="showEvolutions">4</button>
+                <div id="evolutionDropdown" class="dropdown-content">
+                    <!-- Dynamically generated dropdown items will go here -->
+                </div>
+                <a id="ordiScanLink" href="#" target="_blank"><button id="viewOrdiScan"></button></a>
+                <button id="downloadCat"></button>
             </div>
+        </div>
+
+        <div class="image-container" id="dynamic-images-container">
+            <canvas id="sharedCanvas" width="600" height="600"></canvas>
         </div>
     </div>
 
@@ -27,7 +33,7 @@
         <button id="loadCatButton">Load Cat</button>
         <span id="error-message" style="color: red; display: none;"></span>
     </div>
-    
+
 
     <div class="layers-grid" id="checkboxContainer">
         <!-- Dynamically generated layer buttons will go here -->
@@ -39,6 +45,6 @@
 
     <script src="script.js"></script>
 
-    </div>
+</body>
 
 </html>

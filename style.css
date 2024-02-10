@@ -1,4 +1,16 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --border-light: #DFDFDF;
+    /* White */
+    --border-dark: #6f6f6f;
+    /* Dark grey */
+    --button-color: #d8d8d8;
+    /* Black */
+    --button-hover-color: #c0c0c0;
+    /* Black */
+}
+
 
 * {
     box-sizing: border-box;
@@ -8,13 +20,20 @@
 body {
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* This will push the footer to the bottom */
+    justify-content: space-between;
+    /* This will push the footer to the bottom */
     align-items: center;
-    height: calc(var(--vh, 1vh) * 100); /* Replace 100vh with this */
+    height: calc(var(--vh, 1vh) * 100);
+    /* Replace 100vh with this */
     margin: 0;
     padding: 0;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Inconsolata', monospace;
     overflow-x: hidden;
+    background: url(bg.jpg) no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
 }
 
 .footer {
@@ -27,96 +46,166 @@ body {
 
 .footer a {
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 700;
     color: #969696;
 }
 
 .header {
-    font-size: clamp(24px, 5vw, 32px);
-    margin: 20px 0;
-    font-weight: 700;
+    background: url('title.png') no-repeat center center;
+    background-size: contain;
+    height: 100px;
+    /* Example height */
+    width: 80%;
+    /* Example width */
+    margin: 0 auto;
+    margin-top: 10px;
+}
+
+
+.cat-display-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    width: 60%;
+    border-radius: 2px;
+}
+
+.status-bar {
+    display: flex;
+    justify-content: space-between;
+    /* Space between the text and buttons */
+    align-items: center;
+    /* Center items vertically */
+    width: 100%;
+    height: 30px;
+    /* Or adjust as needed */
+    background-image: linear-gradient(to right, #00F6EE 0%, #CAE8AE 18%, #FFB6B5 48%, #7B85EE 78%, #00FCF0 100%);
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+    padding-left: 8px;
+    padding-right: 4px;
+}
+
+.status-bar .cat-name {
+    float: left;
+    /* Text floats left */
+    font-size: 18px;
+    /* Adjust as needed */
+    color: #000000;
+    /* Text color */
+}
+
+.status-bar .button-container {
+    display: flex;
+    gap: 4px;
+    /* Space between buttons */
+}
+
+.status-bar button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 24px;
+    /* Small square size */
+    height: 24px;
+    background-color: var(--button-color);
+    /* Grey background */
+    border-top: 2px solid var(--border-light);
+    border-left: 2px solid var(--border-light);
+    border-right: 2px solid var(--border-dark);
+    border-bottom: 2px solid var(--border-dark);
+    border-radius: 2px;
+    /* Slightly rounded corners */
+    cursor: pointer;
+    padding: 0;
+    color: #000000;
+}
+
+.status-bar button:active {
+    border-top: 2px solid var(--border-dark);
+    border-left: 2px solid var(--border-dark);
+    border-right: 2px solid var(--border-light);
+    border-bottom: 2px solid var(--border-light);
+}
+
+.status-bar button:hover {
+    background-color: var(--button-hover-color);
+    /* Slightly darker on hover */
+}
+
+#viewOrdiScan {
+    background-image: url('ordiscan.png');
+    /* Replace with your icon path */
+    background-size: 16px 16px;
+    /* Icon size */
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+#downloadCat {
+    background-image: url('download.png');
+    /* Replace with your icon path */
+    background-size: 16px 16px;
+    /* Icon size */
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+#showEvolutions {
+    background-image: url('path/to/evolutions-icon.png');
+    /* Replace with your icon path */
+    background-size: 20px 20px;
+    /* Icon size */
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* Dropdown Container */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    border-radius: 2px;
+}
+
+/* Dropdown Items */
+.dropdown-content div {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content div:hover {
+    background-color: #f1f1f1;
+    cursor: pointer;
 }
 
 .image-container {
-    position: relative;
-    width: 60%;
-    max-width: 500px;
-    max-height: 500px;
-    margin: 20px 20px;
-    border-radius: 8px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    background-color: #f9f9f9;
+    border-bottom-left-radius: 2px;
+    border-bottom-right-radius: 2px;
 }
 
 #sharedCanvas {
     width: 100%;
     height: 100%;
     border-radius: 8px;
+    padding: 4px;
 }
-
-/* Modal */
-.modal {
-    display: none;
-    position: absolute;
-    z-index: 2; /* Higher than other elements in image-container */
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #fefefe;
-    border-radius: 8px;
-}
-
-.modal-content {
-    background-color: #fefefe;
-    padding: 20px;
-    width: 100%; /* Adjust width as needed */
-    text-align: center;
-    display: flex;
-    flex-direction: column; /* Stack elements vertically */
-    align-items: center; /* Center items horizontally */
-    justify-content: center; /* Center items vertically */
-    position: relative; /* Needed for positioning the close button */
-    height: 100%; /* Take full height of the modal */
-    border-radius: 8px;
-}
-.close {
-    color: #aaa;
-    position: absolute; /* Positioning relative to modal-content */
-    top: 8px; /* Distance from the top */
-    right: 20px; /* Distance from the right */
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.close:hover,
-.close:focus {
-    color: black;
-    text-decoration: none;
-}
-
-#viewOrdiScan, #downloadCat {
-    padding: 10px 20px;
-    margin: 10px;
-    font-size: 16px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    width: 80%; /* Match width with modal content */
-    text-decoration: none;
-    color: black;
-}
-
-.modal-content a {
-    text-decoration: none;
-    color: black;
-}
-
 
 .cat-id-container {
     display: flex;
     align-items: center;
     margin: 20px 0;
+    background-image: linear-gradient(to right, #00F6EE 0%, #CAE8AE 18%, #FFB6B5 48%, #7B85EE 78%, #00FCF0 100%);
+    padding: 4px;
+    border-radius: 2px;
 }
 
 .cat-id-container input {
@@ -124,37 +213,51 @@ body {
     padding: 8px;
     font-size: 16px;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: 2px;
+    border-top: 2px solid var(--border-dark);
+    border-left: 2px solid var(--border-dark);
+    border-right: 2px solid var(--border-light);
+    border-bottom: 2px solid var(--border-light);
 }
 
 .cat-id-container button {
-    padding: 8px 16px;
+    padding: 7px 16px;
     font-size: 16px;
-    border: none;
-    border-radius: 4px;
-    background-color: #9d82ff;
-    color: white;
+    border-radius: 2px;
+    background-color: var(--button-color);
+    color: #000;
     cursor: pointer;
+    border-top: 2px solid var(--border-light);
+    border-left: 2px solid var(--border-light);
+    border-right: 2px solid var(--border-dark);
+    border-bottom: 2px solid var(--border-dark);
+}
+
+.cat-id-container button:active {
+    border-top: 2px solid var(--border-dark);
+    border-left: 2px solid var(--border-dark);
+    border-right: 2px solid var(--border-light);
+    border-bottom: 2px solid var(--border-light);
 }
 
 .cat-id-container button:hover {
-    background-color: #754fff;
+    background-color: var(--button-hover-color);
 }
+
 
 .layers-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     width: 90%;
     max-width: 1000px;
-    gap: 10px;
-    padding-bottom: 20px;
-    max-height: calc(100vh -
-            /* Adjust based on other elements */
-        );
+    gap: 4px;
+    padding: 4px;
     overflow-y: auto;
     /* Enable vertical scrolling */
     /* Ensure that the grid itself does not overflow horizontally */
     overflow-x: hidden;
+    border-radius: 2px;
+    background-image: linear-gradient(to bottom right, #00F6EE 0%, #CAE8AE 18%, #FFB6B5 48%, #7B85EE 78%, #00FCF0 100%);
 }
 
 
@@ -164,8 +267,7 @@ body {
     min-width: 80px;
     /* Set the minimum width for the button */
     height: 30px;
-    background-color: #f1f1f1;
-    border-radius: 4px;
+    border-radius: 2px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -176,43 +278,46 @@ body {
 
 .layer-button button {
     width: 100%;
-    /* Makes the button fill the container */
     height: 100%;
-    /* Makes the button fill the container */
-    background-color: transparent;
-    /* Matches the outer div's background */
-    border: none;
-    /* Removes the border */
-    border-radius: 4px;
-    /* Optional: if you want to keep the rounded corners */
+    border-radius: 2px;
     display: block;
-    /* Optional: stretches the button to fill the container */
     padding: 0;
-    /* Removes padding */
     cursor: pointer;
-    outline: none;
-    /* Removes the outline */
+    color: #000000;
+    background-color: var(--button-color);
+    border-top: 2px solid var(--border-light);
+    border-left: 2px solid var(--border-light);
+    border-right: 2px solid var(--border-dark);
+    border-bottom: 2px solid var(--border-dark);
+}
+
+.layer-button button:active {
+    border-top: 2px solid var(--border-dark);
+    border-left: 2px solid var(--border-dark);
+    border-right: 2px solid var(--border-light);
+    border-bottom: 2px solid var(--border-light);
 }
 
 .layer-button button:hover {
-    background-color: #e0e0e0;
+    background-color: var(--button-hover-color);
     /* Hover effect for the button */
 }
 
 .layer-button button.active {
-    background-color: #9d82ff;
+    background-color: #bbbbbb;
     /* Active color */
-    color: white;
+    color: 000000;
 }
 
 .layer-button button.inactive {
-    background-color: #e0e0e0;
+    background-color: var(--button-color);
     /* Inactive color */
-    color: black;
+    color: #000000;
 }
 
 .layer-button button:disabled {
     background-color: #ddd;
     /* Disabled color */
-    color: #aaa;
+    color: #c0c0c0;
+    pointer-events: none;
 }
