@@ -497,7 +497,6 @@ document.addEventListener("DOMContentLoaded", function () {
     adjustCanvasSize(); // Now we can safely call it
     loadCatEventSetup();
     createLayerButtons();
-    initiateLayerLoading();
 });
 
 // Sets up the event listener for the 'Load Cat' button, unchanged
