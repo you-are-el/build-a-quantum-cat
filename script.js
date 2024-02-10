@@ -238,13 +238,13 @@ async function updateCatForEvolutionState(evolutionStateIndex) {
     const showEvolutionsButton = document.getElementById('showEvolutions');
     showEvolutionsButton.textContent = evolutionStateIndex + 1; // +1 for human-readable format
 
-    // Reset layersData and buttons before updating
-    layersData.fill(null);
-    //resetButtons(); // Reset all buttons
-
-    // Iterate over evolutionData to determine which layers to load
+    // Iterate over evolutionData to determine which layers to update
     for (let i = 0; i < evolutionData.length; i++) {
-        if (evolutionData[i] === "True") {
+        // Check if the layer is already loaded
+        if (layersData[i] && evolutionData[i] === "True") {
+            // Layer is already loaded and should be displayed
+            setButtonState(i, true);
+        } else if (evolutionData[i] === "True") {
             // Load and display this layer
             await loadLayer(catId, layerHashes[i]).then(imageBlob => {
                 if (imageBlob) {
@@ -253,12 +253,14 @@ async function updateCatForEvolutionState(evolutionStateIndex) {
                 }
             });
         } else {
+            layersData[i] = null; // Ensure the layer is set to null if not used
             setButtonState(i, false); // Set the corresponding button to inactive
         }
     }
 
     renderLayers(); // Re-render layers to update the cat image
 }
+
 
 function setButtonState(layerIndex, isActive) {
     const button = document.getElementById('layer' + (layerIndex + 1));
