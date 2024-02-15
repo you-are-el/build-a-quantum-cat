@@ -192,7 +192,7 @@ function populateEvolutionDropdown() {
             item.textContent = 'Evolution ' + (evolutionIndex + 1); // +1 for human-readable format
 
             // Add click event listener to each dropdown item
-            item.addEventListener('click', function() {
+            item.addEventListener('click', function () {
                 // Update the button text to the selected evolution number
                 showEvolutionsButton.textContent = evolutionIndex + 1;
                 updateCatForEvolutionState(evolutionIndex);
@@ -492,6 +492,46 @@ function initiateLayerLoading() {
     });
 }
 
+// Load random cat //////////////////////////////////////////////////////////////////////
+function loadRandomCat() {
+    clearLayersData();
+    const fetchQueue = new FetchQueue(50);
+
+    for (let i = 0; i < layerHashes.length; i++) {
+        catId = "cat" + Math.floor(Math.random() * 3333).toString().padStart(4, '0');
+        fetchQueue.enqueue(() => loadLayer(catId, layerHashes[i])
+            .then(imageBlob => {
+                if (imageBlob) {
+                    layersData[i] = imageBlob;
+                    const button = document.getElementById('layer' + (i + 1));
+                    button.classList.remove('inactive');
+                    button.classList.add('active');
+                    button.textContent = 'Layer ' + (i + 1);
+                } else {
+                    // Handle the case where loadLayer returns null
+                    const button = document.getElementById('layer' + (i + 1));
+                    if (button) {
+                        button.disabled = true;
+                        button.textContent = 'Trait Not Available';
+                    }
+                }
+            })
+            .catch(error => {
+                console.error("error from loadLayer", error);
+                // Disable the button for the layer that failed to load or is not available
+                const button = document.getElementById('layer' + (i + 1));
+                if (button) {
+                    button.disabled = true;
+                    button.textContent = 'Not Inscribed';
+                }
+            }));
+    }
+    fetchQueue.onAllCompleted(() => {
+        renderLayers();
+        updateCatNameDisplay("cat????");
+    });
+}
+
 
 // Function to render layers based on button states
 function renderLayers() {
@@ -506,7 +546,7 @@ function renderLayers() {
 
             return new Promise((resolve) => {
                 img.onload = () => {
-                    resolve({img, index});
+                    resolve({ img, index });
                     URL.revokeObjectURL(objectURL);
                 };
                 img.src = objectURL;
@@ -551,33 +591,41 @@ document.addEventListener("DOMContentLoaded", function () {
 function loadCatEventSetup() {
     document.getElementById('loadCatButton').addEventListener('click', async function () {
         const input = document.getElementById('catIdInput').value;
-        catId = await getCatIdFromInput(input);
 
-        if (catId) {
-            updateCatNameDisplay(catId);
-            updateOrdiScanUrl();
-            clearLayersData();
-
-            // Determine the highest available evolution state
-            const highestEvolutionState = getHighestEvolutionState(catId);
-
-            // Update the cat for this evolution state
-            await updateCatForEvolutionState(highestEvolutionState);
-
-            // Update Buttons
-            console.log("debug " + (highestEvolutionState + 1));
-            setButtonState((highestEvolutionState + 1));
-
-            // Update the showEvolutions button
-            const showEvolutionsButton = document.getElementById('showEvolutions');
-            showEvolutionsButton.textContent = highestEvolutionState + 1; // +1 for human-readable format
-
-            // Optionally, update the dropdown if it needs to reflect the new cat's data
-            populateEvolutionDropdown();
+        if (input.toLowerCase() === "nothing was done") {
+            loadRandomCat();
         } else {
-            console.error("Invalid cat ID:", input);
-            // Handle invalid cat ID if needed
+            catId = await getCatIdFromInput(input);
+
+            if (catId) {
+                updateCatNameDisplay(catId);
+                updateOrdiScanUrl();
+                clearLayersData();
+
+                // Determine the highest available evolution state
+                const highestEvolutionState = getHighestEvolutionState(catId);
+
+                // Update the cat for this evolution state
+                await updateCatForEvolutionState(highestEvolutionState);
+
+                // Update Buttons
+                console.log("debug " + (highestEvolutionState + 1));
+                setButtonState((highestEvolutionState + 1));
+
+                // Update the showEvolutions button
+                const showEvolutionsButton = document.getElementById('showEvolutions');
+                showEvolutionsButton.textContent = highestEvolutionState + 1; // +1 for human-readable format
+
+                // Optionally, update the dropdown if it needs to reflect the new cat's data
+                populateEvolutionDropdown();
+            } else {
+                console.error("Invalid cat ID:", input);
+                // Handle invalid cat ID if needed
+            }
+
         }
+
+
     });
 }
 
