@@ -90,18 +90,50 @@ function getHighestEvolutionState(catId) {
 }
 /////////////////////////////////////////////////////////////////////////////////
 
-//On-click event for download button //////////////////////////////////
 document.getElementById("downloadCat").onclick = function () {
-    var canvas = document.getElementById("sharedCanvas");
-    canvas.toBlob(function (blob) {
-        var url = URL.createObjectURL(blob);
-        var link = document.createElement('a');
-        link.download = 'my_quantumcat.png';
-        link.href = url;
-        link.click();
-        URL.revokeObjectURL(url); // Clean up after download
-    }, 'image/png');
+    const imageLoadPromises = layersData.map((layerBlob, index) => {
+        if (layerBlob) {
+            const objectURL = URL.createObjectURL(layerBlob);
+            const img = new Image();
+
+            return new Promise((resolve) => {
+                img.onload = () => {
+                    resolve({ img, index });
+                    URL.revokeObjectURL(objectURL);
+                };
+                img.src = objectURL;
+            });
+        }
+        return Promise.resolve(null);
+    });
+
+    // Wait for all images to load
+    Promise.all(imageLoadPromises).then((loadedImages) => {
+        // Create an off-screen canvas with desired size
+        const offScreenCanvas = document.createElement('canvas');
+        offScreenCanvas.width = 600; // Set desired output width
+        offScreenCanvas.height = 600; // Set desired output height
+        const offScreenContext = offScreenCanvas.getContext('2d');
+
+        // Sort and draw images on the off-screen canvas
+        loadedImages.filter(imgObj => imgObj).sort((a, b) => a.index - b.index).forEach(imgObj => {
+            offScreenContext.drawImage(imgObj.img, 0, 0, offScreenCanvas.width, offScreenCanvas.height);
+        });
+
+        // Convert the off-screen canvas to a data URL and trigger download
+        offScreenCanvas.toBlob((blob) => {
+            const newImgUrl = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = newImgUrl;
+            link.download = 'my_quantumcat.png'; // Set the download filename
+            document.body.appendChild(link); // Required for Firefox
+            link.click();
+            document.body.removeChild(link); // Clean up
+            URL.revokeObjectURL(newImgUrl); // Clean up
+        }, 'image/png');
+    });
 };
+
 ////////////////////////////////////////////////////////////////////////
 
 //Create index for faster loading //////////////////////////////////
