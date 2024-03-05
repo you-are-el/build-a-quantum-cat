@@ -329,10 +329,17 @@ function setButtonState(evolutionStateIndex) {
                 button.disabled = false;
                 button.textContent = 'Layer ' + (index + 1);
             } else if (state === "False") {
-                button.classList.add('inactive');
-                button.classList.remove('active');
-                button.disabled = true;
-                button.textContent = 'Trait Not Available';
+                if (index + 1 == 29) {
+                    button.classList.add('inactive');
+                    button.classList.remove('active');
+                    button.disabled = true;
+                    button.textContent = 'No Cape';
+                } else {
+                    button.classList.add('inactive');
+                    button.classList.remove('active');
+                    button.disabled = true;
+                    button.textContent = 'Trait Not Available';
+                }
             } else {
                 button.classList.add('inactive');
                 button.classList.remove('active');
@@ -504,8 +511,13 @@ function initiateLayerLoading() {
                     // Handle the case where loadLayer returns null
                     const button = document.getElementById('layer' + (i + 1));
                     if (button) {
-                        button.disabled = true;
-                        button.textContent = 'Trait Not Available';
+                        if (i + 1 == 29) {
+                            button.disabled = true;
+                            button.textContent = 'No Cape';
+                        } else {
+                            button.disabled = true;
+                            button.textContent = 'Trait Not Available';
+                        }
                     }
                 }
             })
@@ -543,8 +555,13 @@ function loadRandomCat() {
                     // Handle the case where loadLayer returns null
                     const button = document.getElementById('layer' + (i + 1));
                     if (button) {
-                        button.disabled = true;
-                        button.textContent = 'Trait Not Available';
+                        if (i + 1 == 29) {
+                            button.disabled = true;
+                            button.textContent = 'No Cape';
+                        } else {
+                            button.disabled = true;
+                            button.textContent = 'Trait Not Available';
+                        }
                     }
                 }
             })
