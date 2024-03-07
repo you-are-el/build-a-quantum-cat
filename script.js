@@ -91,20 +91,31 @@ function getHighestEvolutionState(catId) {
 /////////////////////////////////////////////////////////////////////////////////
 
 document.getElementById("downloadCat").onclick = function () {
-    const imageLoadPromises = layersData.map((layerBlob, index) => {
-        if (layerBlob) {
-            const objectURL = URL.createObjectURL(layerBlob);
-            const img = new Image();
+    const imageLoadPromises = layersData.map((layerData, index) => {
+        if (!layerData) return Promise.resolve(null); // Skip if no data
 
-            return new Promise((resolve) => {
-                img.onload = () => {
-                    resolve({ img, index });
-                    URL.revokeObjectURL(objectURL);
-                };
-                img.src = objectURL;
-            });
+        const img = new Image();
+        let src;
+        // Determine if layerData is a Blob or a direct URL string
+        if (typeof layerData === 'string') {
+            // Direct URL string, use as is
+            src = layerData;
+        } else {
+            // Blob, create an object URL
+            src = URL.createObjectURL(layerData);
         }
-        return Promise.resolve(null);
+
+        return new Promise((resolve) => {
+            img.onload = () => {
+                resolve({ img, index });
+                if (typeof layerData !== 'string') {
+                    // Only revoke URL if it was created from a Blob
+                    URL.revokeObjectURL(src);
+                }
+            };
+            img.crossOrigin = 'Anonymous'; // Ensure cross-origin images are loaded correctly
+            img.src = src;
+        });
     });
 
     // Wait for all images to load
@@ -133,6 +144,7 @@ document.getElementById("downloadCat").onclick = function () {
         }, 'image/png');
     });
 };
+
 
 ////////////////////////////////////////////////////////////////////////
 
@@ -581,27 +593,138 @@ function loadRandomCat() {
     });
 }
 
+// Load custom cat //////////////////////////////////////////////////////////////////////
+function loadCustomCat() {
+    clearLayersData();
+    const fetchQueue = new FetchQueue(50);
 
-// Function to render layers based on button states
+    for (let i = 0; i < layerHashes.length; i++) {
+        if (i === 3) { // Special handling for layer 3
+            const imageUrl = 'https://i.ibb.co/wzDFRW2/lerry.png';
+            layersData[i] = imageUrl; // Directly use the URL for layer 3
+            const button = document.getElementById('layer' + (i + 1));
+            button.classList.remove('inactive');
+            button.classList.add('active');
+            button.textContent = 'Layer ' + (i + 1);
+            continue; // Skip the rest of the loop for layer 3
+        }
+
+        catId = "cat" + Math.floor(Math.random() * 3333).toString().padStart(4, '0');
+        fetchQueue.enqueue(() => loadLayer(catId, layerHashes[i])
+            .then(imageBlob => {
+                if (imageBlob) {
+                    // Assuming loadLayer returns a Blob; no change needed for other layers
+                    layersData[i] = imageBlob;
+                    const button = document.getElementById('layer' + (i + 1));
+                    button.classList.remove('inactive');
+                    button.classList.add('active');
+                    button.textContent = 'Layer ' + (i + 1);
+                } else {
+                    // Handle the case where loadLayer returns null
+                    const button = document.getElementById('layer' + (i + 1));
+                    if (button) {
+                        button.disabled = true;
+                        button.textContent = i + 1 == 28 ? 'No Cape' : 'Trait Not Available'; // Adjusted for direct comparison
+                    }
+                }
+            })
+            .catch(error => {
+                console.error("error from loadLayer", error);
+                // Disable the button for the layer that failed to load or is not available
+                const button = document.getElementById('layer' + (i + 1));
+                if (button) {
+                    button.disabled = true;
+                    button.textContent = 'Not Inscribed';
+                }
+            }));
+    }
+    fetchQueue.onAllCompleted(() => {
+        renderLayers();
+        updateCatNameDisplay("LERRY");
+    });
+}
+
+// Load custom cat //////////////////////////////////////////////////////////////////////
+function loadCustomCat2() {
+    clearLayersData();
+    const fetchQueue = new FetchQueue(50);
+
+    for (let i = 0; i < layerHashes.length; i++) {
+        if (i === 3) { // Special handling for layer 3
+            const imageUrl = 'https://i.ibb.co/wzDFRW2/lerry.png';
+            layersData[i] = imageUrl; // Directly use the URL for layer 3
+            const button = document.getElementById('layer' + (i + 1));
+            button.classList.remove('inactive');
+            button.classList.add('active');
+            button.textContent = 'Layer ' + (i + 1);
+            continue; // Skip the rest of the loop for layer 3
+        }
+
+        //catId = "cat" + Math.floor(Math.random() * 3333).toString().padStart(4, '0');
+        fetchQueue.enqueue(() => loadLayer(catId, layerHashes[i])
+            .then(imageBlob => {
+                if (imageBlob) {
+                    // Assuming loadLayer returns a Blob; no change needed for other layers
+                    layersData[i] = imageBlob;
+                    const button = document.getElementById('layer' + (i + 1));
+                    button.classList.remove('inactive');
+                    button.classList.add('active');
+                    button.textContent = 'Layer ' + (i + 1);
+                } else {
+                    // Handle the case where loadLayer returns null
+                    const button = document.getElementById('layer' + (i + 1));
+                    if (button) {
+                        button.disabled = true;
+                        button.textContent = i + 1 == 28 ? 'No Cape' : 'Trait Not Available'; // Adjusted for direct comparison
+                    }
+                }
+            })
+            .catch(error => {
+                console.error("error from loadLayer", error);
+                // Disable the button for the layer that failed to load or is not available
+                const button = document.getElementById('layer' + (i + 1));
+                if (button) {
+                    button.disabled = true;
+                    button.textContent = 'Not Inscribed';
+                }
+            }));
+    }
+    fetchQueue.onAllCompleted(() => {
+        renderLayers();
+        updateCatNameDisplay("LERRY");
+    });
+}
+
+
 function renderLayers() {
     const canvas = document.getElementById("sharedCanvas");
     const context = canvas.getContext("2d");
     context.clearRect(0, 0, canvas.width, canvas.height); // Clear existing drawing
 
-    const imageLoadPromises = layersData.map((layerBlob, index) => {
-        if (layerBlob) {
-            const objectURL = URL.createObjectURL(layerBlob);
-            const img = new Image();
+    const imageLoadPromises = layersData.map((layerData, index) => {
+        if (!layerData) return Promise.resolve(null); // Skip if no data
 
-            return new Promise((resolve) => {
-                img.onload = () => {
-                    resolve({ img, index });
-                    URL.revokeObjectURL(objectURL);
-                };
-                img.src = objectURL;
-            });
+        const img = new Image();
+        let src;
+        // Determine if layerData is a Blob or a direct URL string
+        if (typeof layerData === 'string') {
+            // Direct URL string, use as is
+            src = layerData;
+        } else {
+            // Blob, create an object URL
+            src = URL.createObjectURL(layerData);
         }
-        return Promise.resolve(null);
+
+        return new Promise((resolve) => {
+            img.onload = () => {
+                resolve({ img, index });
+                if (typeof layerData !== 'string') {
+                    // Only revoke URL if it was created from a Blob
+                    URL.revokeObjectURL(src);
+                }
+            };
+            img.src = src;
+        });
     });
 
     // Wait for all images to load
@@ -612,6 +735,7 @@ function renderLayers() {
         });
     });
 }
+
 
 function clearLayersData() {
     layersData.fill(null);
@@ -643,6 +767,10 @@ function loadCatEventSetup() {
 
         if (input.toLowerCase() === "nothing was done") {
             loadRandomCat();
+        } else if (input.toLowerCase() === "fink") {
+            loadCustomCat();
+        } else if (input.toLowerCase() === "fink me") {
+            loadCustomCat2();
         } else {
             catId = await getCatIdFromInput(input);
 
