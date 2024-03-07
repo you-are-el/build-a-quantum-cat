@@ -640,7 +640,7 @@ function loadCustomCat() {
     }
     fetchQueue.onAllCompleted(() => {
         renderLayers();
-        updateCatNameDisplay("LERRY");
+        updateCatNameDisplay("LARRY");
     });
 }
 
@@ -691,7 +691,7 @@ function loadCustomCat2() {
     }
     fetchQueue.onAllCompleted(() => {
         renderLayers();
-        updateCatNameDisplay("LERRY");
+        updateCatNameDisplay("LARRY");
     });
 }
 
