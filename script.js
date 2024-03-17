@@ -55,7 +55,7 @@ async function loadEvolutionData() {
 
     // First, try to load the local backup file
     try {
-        const localResponse = await fetch('./cat_evolution.json'); // Use relative path to load local file
+        const localResponse = await fetch('cat_evolution.json'); // Use relative path to load local file
         if (!localResponse.ok) { // Check if response was not OK (e.g., 404 or 500 error)
             throw new Error(`HTTP error! status: ${localResponse.status}`); // Throw an error to avoid using a potentially empty or erroneous response
         }
@@ -67,7 +67,7 @@ async function loadEvolutionData() {
 
     // Then, try to fetch the online version and overwrite the local data if successful
     try {
-        const onlineResponse = await fetch('http://139.59.157.112:8000/cat_evolution.json');
+        const onlineResponse = await fetch('http://139.59.157.111:8000/cat_evolution.json');
         if (!onlineResponse.ok) {
             throw new Error(`HTTP error! status: ${onlineResponse.status}`);
         }
