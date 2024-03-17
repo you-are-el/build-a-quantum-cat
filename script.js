@@ -67,7 +67,7 @@ async function loadEvolutionData() {
 
     // Then, try to fetch the online version and overwrite the local data if successful
     try {
-        const onlineResponse = await fetch('http://139.59.157.111:8000/cat_evolution.json');
+        const onlineResponse = await fetch('https://139.59.157.112:8000/cat_evolution.json');
         if (!onlineResponse.ok) {
             throw new Error(`HTTP error! status: ${onlineResponse.status}`);
         }
