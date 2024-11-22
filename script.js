@@ -616,109 +616,6 @@ function loadRandomCat() {
     });
 }
 
-// Load custom cat //////////////////////////////////////////////////////////////////////
-function loadCustomCat() {
-    clearLayersData();
-    const fetchQueue = new FetchQueue(50);
-
-    for (let i = 0; i < layerHashes.length; i++) {
-        if (i === 3) { // Special handling for layer 3
-            const imageUrl = 'https://i.ibb.co/wzDFRW2/lerry.png';
-            layersData[i] = imageUrl; // Directly use the URL for layer 3
-            const button = document.getElementById('layer' + (i + 1));
-            button.classList.remove('inactive');
-            button.classList.add('active');
-            button.textContent = 'Layer ' + (i + 1);
-            continue; // Skip the rest of the loop for layer 3
-        }
-
-        catId = "cat" + Math.floor(Math.random() * 3333).toString().padStart(4, '0');
-        fetchQueue.enqueue(() => loadLayer(catId, layerHashes[i])
-            .then(imageBlob => {
-                if (imageBlob) {
-                    // Assuming loadLayer returns a Blob; no change needed for other layers
-                    layersData[i] = imageBlob;
-                    const button = document.getElementById('layer' + (i + 1));
-                    button.classList.remove('inactive');
-                    button.classList.add('active');
-                    button.textContent = 'Layer ' + (i + 1);
-                } else {
-                    // Handle the case where loadLayer returns null
-                    const button = document.getElementById('layer' + (i + 1));
-                    if (button) {
-                        button.disabled = true;
-                        button.textContent = capeList.includes(i + 2) ? 'No Cape' : 'Trait Not Available'; // Adjusted for direct comparison
-                    }
-                }
-            })
-            .catch(error => {
-                console.error("error from loadLayer", error);
-                // Disable the button for the layer that failed to load or is not available
-                const button = document.getElementById('layer' + (i + 1));
-                if (button) {
-                    button.disabled = true;
-                    button.textContent = 'Not Inscribed';
-                }
-            }));
-    }
-    fetchQueue.onAllCompleted(() => {
-        renderLayers();
-        updateCatNameDisplay("LARRY");
-    });
-}
-
-// Load custom cat //////////////////////////////////////////////////////////////////////
-function loadCustomCat2() {
-    clearLayersData();
-    const fetchQueue = new FetchQueue(50);
-
-    for (let i = 0; i < layerHashes.length; i++) {
-        if (i === 3) { // Special handling for layer 3
-            const imageUrl = 'https://i.ibb.co/wzDFRW2/lerry.png';
-            layersData[i] = imageUrl; // Directly use the URL for layer 3
-            const button = document.getElementById('layer' + (i + 1));
-            button.classList.remove('inactive');
-            button.classList.add('active');
-            button.textContent = 'Layer ' + (i + 1);
-            continue; // Skip the rest of the loop for layer 3
-        }
-
-        //catId = "cat" + Math.floor(Math.random() * 3333).toString().padStart(4, '0');
-        fetchQueue.enqueue(() => loadLayer(catId, layerHashes[i])
-            .then(imageBlob => {
-                if (imageBlob) {
-                    // Assuming loadLayer returns a Blob; no change needed for other layers
-                    layersData[i] = imageBlob;
-                    const button = document.getElementById('layer' + (i + 1));
-                    button.classList.remove('inactive');
-                    button.classList.add('active');
-                    button.textContent = 'Layer ' + (i + 1);
-                } else {
-                    // Handle the case where loadLayer returns null
-                    const button = document.getElementById('layer' + (i + 1));
-                    if (button) {
-                        button.disabled = true;
-                        button.textContent = i + 1 == 28 ? 'No Cape' : 'Trait Not Available'; // Adjusted for direct comparison
-                    }
-                }
-            })
-            .catch(error => {
-                console.error("error from loadLayer", error);
-                // Disable the button for the layer that failed to load or is not available
-                const button = document.getElementById('layer' + (i + 1));
-                if (button) {
-                    button.disabled = true;
-                    button.textContent = 'Not Inscribed';
-                }
-            }));
-    }
-    fetchQueue.onAllCompleted(() => {
-        renderLayers();
-        updateCatNameDisplay("LARRY");
-    });
-}
-
-
 function renderLayers() {
     const canvas = document.getElementById("sharedCanvas");
     const context = canvas.getContext("2d");
@@ -790,10 +687,6 @@ function loadCatEventSetup() {
 
         if (input.toLowerCase() === "nothing was done") {
             loadRandomCat();
-        } else if (input.toLowerCase() === "fink") {
-            loadCustomCat();
-        } else if (input.toLowerCase() === "fink me") {
-            loadCustomCat2();
         } else {
             catId = await getCatIdFromInput(input);
 
@@ -868,4 +761,61 @@ function toggleLayerVisibility(index) {
         });
     }
     renderLayers(); // Call this to immediately reflect the change on canvas
+}
+
+// Wizmas Button //////////////////////////////////////////////////////////////////////
+document.getElementById('wizmasButton').addEventListener('click', function () {
+    loadWizmasCat();
+});
+
+// Load custom cat //////////////////////////////////////////////////////////////////////
+function loadWizmasCat() {
+    clearLayersData();
+    const fetchQueue = new FetchQueue(50);
+
+    // Load santa hat image first
+    fetch('santa-hat.png')
+        .then(response => response.blob())
+        .then(hatBlob => {
+            // Store santa hat in a new array position by extending the array
+            layersData.push(hatBlob);
+        })
+        .catch(error => {
+            console.error("Error loading santa hat:", error);
+        });
+
+    for (let i = 0; i < layerHashes.length; i++) {
+        //catId = "cat" + Math.floor(Math.random() * 3333).toString().padStart(4, '0');
+        fetchQueue.enqueue(() => loadLayer(catId, layerHashes[i])
+            .then(imageBlob => {
+                if (imageBlob) {
+                    // Assuming loadLayer returns a Blob; no change needed for other layers
+                    layersData[i] = imageBlob;
+                    const button = document.getElementById('layer' + (i + 1));
+                    button.classList.remove('inactive');
+                    button.classList.add('active');
+                    button.textContent = 'Layer ' + (i + 1);
+                } else {
+                    // Handle the case where loadLayer returns null
+                    const button = document.getElementById('layer' + (i + 1));
+                    if (button) {
+                        button.disabled = true;
+                        button.textContent = i + 1 == 28 ? 'No Cape' : 'Trait Not Available'; // Adjusted for direct comparison
+                    }
+                }
+            })
+            .catch(error => {
+                console.error("error from loadLayer", error);
+                // Disable the button for the layer that failed to load or is not available
+                const button = document.getElementById('layer' + (i + 1));
+                if (button) {
+                    button.disabled = true;
+                    button.textContent = 'Not Inscribed';
+                }
+            }));
+    }
+    fetchQueue.onAllCompleted(() => {
+        renderLayers();
+        updateCatNameDisplay("WizmasCAT");
+    });
 }

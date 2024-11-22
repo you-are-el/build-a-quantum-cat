@@ -161,6 +161,10 @@ body {
     background-position: center;
 }
 
+#wizmasButton {
+    width: 80px;
+}
+
 /* Dropdown Container */
 .dropdown-content {
     display: none;
