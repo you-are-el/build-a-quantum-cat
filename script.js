@@ -68,11 +68,12 @@ async function loadEvolutionData() {
 
     // Then, try to fetch the online version and overwrite the local data if successful
     try {
-        const onlineResponse = await fetch('https://139.59.157.112:8000/cat_evolution.json');
+        const onlineResponse = await fetch('https://api.build-a-quantumcat.com/cat_evolution.json');
         if (!onlineResponse.ok) {
             throw new Error(`HTTP error! status: ${onlineResponse.status}`);
-        }
+        }        
         data = await onlineResponse.json(); // Overwrite local data with online data
+        console.log("Online data loaded successfully");
     } catch (error) {
         console.error("Error loading evolution data from remote source:", error);
         // If online fetch fails, we already have the local data as a fallback, so do nothing
