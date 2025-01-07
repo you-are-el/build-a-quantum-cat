@@ -48,8 +48,6 @@ function getOrdiScanUrl(catId) {
 }
 ////////////////////////////////////////////////////////////////////////
 
-//Functions that load and prepare the evolutions json ///////////////////////////
-// Functions that load and prepare the evolutions json ///////////////////////////
 // Functions that load and prepare the evolutions json ///////////////////////////
 async function loadEvolutionData() {
     let data = null; // Initialize data to null
@@ -89,8 +87,28 @@ async function buildEvolutionIndex() {
     if (evolutionData) {
         Object.keys(evolutionData).forEach(catId => {
             let catEvolutions = new Map();
+            let previousArray = null;
+
             evolutionData[catId].forEach((stateArray, stateIndex) => {
-                catEvolutions.set(stateIndex, stateArray);
+                if (stateIndex === 0) {
+                    // Always include the first array
+                    catEvolutions.set(stateIndex, stateArray);
+                    previousArray = stateArray;
+                } else {
+                    // Check if current array has any new true values
+                    let hasNewTrueValue = false;
+                    for (let i = 0; i < stateArray.length; i++) {
+                        if (stateArray[i] === "True" && previousArray[i] !== "True") {
+                            hasNewTrueValue = true;
+                            break;
+                        }
+                    }
+                    
+                    if (hasNewTrueValue) {
+                        catEvolutions.set(stateIndex, stateArray);
+                        previousArray = stateArray;
+                    }
+                }
             });
             evolutionIndex.set(catId, catEvolutions);
         });
@@ -257,7 +275,7 @@ function populateEvolutionDropdown() {
         dropdown.innerHTML = '';
         evolutions.forEach((_, evolutionIndex) => {
             let item = document.createElement('div');
-            item.textContent = 'Evolution ' + (evolutionIndex + 1); // +1 for human-readable format
+            item.textContent = (evolutionIndex + 1 >= 5 && evolutionIndex + 1 <= 8) ? 'Golden Cape' : 'Evolution ' + (evolutionIndex + 1); // +1 for human-readable format
 
             // Add click event listener to each dropdown item
             item.addEventListener('click', function () {
